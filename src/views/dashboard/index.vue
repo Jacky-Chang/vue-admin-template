@@ -1,6 +1,11 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">欢迎<strong>{{ name }}</strong>使用后台管理系统</div>
+    <div class="dashboard-text">
+      {{ $t('views.dashboard.message.prefix') }}<strong>{{ name }}</strong>
+      <br>
+      {{ $t('views.dashboard.message.suffix') }}
+      <em><strong>{{ $t('views.dashboard.message.sysname') }}</strong></em>
+    </div>
   </div>
 </template>
 
@@ -23,7 +28,7 @@ export default {
     margin: 30px;
   }
   &-text {
-    margin: 240px;;
+    margin: 180px;;
     text-align: center;
     font-size: 30px;
     line-height: 46px;

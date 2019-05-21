@@ -22,3 +22,13 @@ export function logout(role) {
     method: 'post'
   })
 }
+
+// ----------------------------------- 注意，上边为公共登录登出接口
+
+export function getList(data) {
+  return request({
+    url: '/user/list',
+    method: 'post',
+    data: data || {}
+  })
+}
