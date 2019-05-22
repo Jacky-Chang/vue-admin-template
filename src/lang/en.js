@@ -28,7 +28,23 @@ export default {
       tableHead: ['ID', 'Name', 'Account', 'CreateTime', 'UpdateTime', 'Options']
     },
     user: {
-      tableHead: ['ID', 'Name', 'Account', 'Password', 'Status', 'CreateTime', 'UpdateTime', 'Options']
+      tableHead: ['ID', 'Name', 'Account', 'Password', 'Status', 'CreateTime', 'UpdateTime', 'Options'],
+      query: {
+        name: 'Name',
+        namePlaceholder: 'Please input name',
+        account: 'Account',
+        accountPlaceholder: 'Please input account',
+        status: 'Status',
+        query: 'Query',
+        reset: 'Reset',
+        selectStatus: {
+          info: 'Select status',
+          all: 'All',
+          enable: 'Enabled',
+          disable: 'Disabled',
+          delete: 'Deleted'
+        }
+      }
     }
   },
   profile: {

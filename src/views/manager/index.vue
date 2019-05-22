@@ -18,24 +18,24 @@
           {{ scope.row.name }}
         </template>
       </el-table-column>
-      <el-table-column :label="$t('views.manager.tableHead')[2]" width="110" align="center">
+      <el-table-column :label="$t('views.manager.tableHead')[2]" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.account }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('views.manager.tableHead')[3]" width="200">
+      <el-table-column align="center" :label="$t('views.manager.tableHead')[3]">
         <template slot-scope="scope">
           <i class="el-icon-time" />
           <span>{{ scope.row.createTime | timeFilter }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('views.manager.tableHead')[4]" width="200">
+      <el-table-column align="center" :label="$t('views.manager.tableHead')[4]">
         <template slot-scope="scope">
           <i class="el-icon-time" />
           <span>{{ scope.row.updateTime | timeFilter }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('views.manager.tableHead')[5]" width="110" align="center">
+      <el-table-column :label="$t('views.manager.tableHead')[5]" align="center">
         <template slot-scope="scope">
           {{ scope.row.pageviews }}
         </template>
