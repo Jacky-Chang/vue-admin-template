@@ -1,9 +1,13 @@
 <template>
   <div class="login-container">
+    <template>
+      <lang-select class="right-menu-item hover-effect" />
+    </template>
+
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">后台管理</h3>
+        <h3 class="title">{{ $t('login.title') }}</h3>
       </div>
 
       <el-form-item prop="account">
@@ -13,7 +17,7 @@
         <el-input
           ref="account"
           v-model="loginForm.account"
-          placeholder="请输入用户名"
+          :placeholder="$t('login.accountPlaceholder')"
           name="account"
           type="text"
           tabindex="1"
@@ -30,7 +34,7 @@
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
-          placeholder="请输入密码"
+          :placeholder="$t('login.passwordPlaceholder')"
           name="password"
           tabindex="2"
           auto-complete="on"
@@ -41,10 +45,10 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">{{ $t('login.login') }}</el-button>
 
       <div class="tips" style="text-align: center">
-        <span>欢迎使用爬爬管理后台</span>
+        <span>{{ $t('login.tips') }}</span>
       </div>
 
     </el-form>
@@ -52,9 +56,13 @@
 </template>
 
 <script>
+import LangSelect from '@/components/LangSelect'
 
 export default {
   name: 'Login',
+  components: {
+    LangSelect
+  },
   data() {
     const validateAccount = (rule, value, callback) => {
       if (value.length < 1) {
@@ -230,6 +238,24 @@ $light_gray:#eee;
     color: $dark_gray;
     cursor: pointer;
     user-select: none;
+  }
+
+  .right-menu-item {
+    float: right;
+    padding: 8px 8px 0 0;
+    height: 100%;
+    font-size: 24px;
+    color: #5a5e66;
+    vertical-align: text-bottom;
+
+    &.hover-effect {
+      cursor: pointer;
+      transition: background .3s;
+
+      &:hover {
+        background: rgba(0, 0, 0, .025)
+      }
+    }
   }
 }
 </style>

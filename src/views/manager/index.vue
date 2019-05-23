@@ -4,7 +4,7 @@
       v-loading="listLoading"
       :data="list"
       element-loading-text="Loading"
-      border
+      stripe
       fit
       highlight-current-row
     >
@@ -82,3 +82,27 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+  .el-table {
+    box-shadow: 0 0 10px 5px #B7BFCE;
+  }
+  .table-expand {
+    font-size: 0;
+    label {
+      width: 90px;
+      color: #99a9bf;
+    }
+    .el-form-item {
+      margin-right: 0;
+      margin-bottom: 0;
+      width: 50%;
+    }
+  }
+  .el-pagination {
+    margin-top: 24px;
+    text-align: center;
+  }
+  .el-row {
+    margin-bottom: 24px;
+  }
+</style>

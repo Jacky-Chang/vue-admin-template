@@ -34,13 +34,15 @@ export const constantRoutes = [
   {
     path: '/login',
     component: () => import('@/views/login/index'),
-    hidden: true
+    hidden: true,
+    meta: { title: 'login', icon: 'login' }
   },
 
   {
     path: '/404',
     component: () => import('@/views/404'),
-    hidden: true
+    hidden: true,
+    meta: { title: '404', icon: '404' }
   },
 
   {

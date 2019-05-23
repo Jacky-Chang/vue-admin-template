@@ -10,13 +10,14 @@
       <el-form-item :label="$t('views.user.query.status')" prop="status">
         <el-select v-model="queryData.status" :placeholder="$t('views.user.query.selectStatus.info')">
           <el-option :label="$t('views.user.query.selectStatus.all')" value="" />
-          <el-option :label="$t('views.user.query.selectStatus.enable')" value="1" />
-          <el-option :label="$t('views.user.query.selectStatus.disable')" value="0" />
+          <el-option :label="$t('views.user.query.selectStatus.enabled')" value="1" />
+          <el-option :label="$t('views.user.query.selectStatus.disabled')" value="0" />
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="success" @click="query()">{{ $t('views.user.query.query') }}</el-button>
-        <el-button type="danger" @click="reset('queryData')">{{ $t('views.user.query.reset') }}</el-button>
+        <el-button type="success" @click="query">{{ $t('views.user.opt.query') }}</el-button>
+        <el-button type="danger" @click="reset('queryData')">{{ $t('views.user.opt.reset') }}</el-button>
+        <el-button type="primary" @click="createUser">{{ $t('views.user.opt.create') }}</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -90,7 +91,13 @@
       </el-table-column>
       <el-table-column :label="$t('views.user.tableHead')[7]" align="center">
         <template slot-scope="scope">
-          {{ scope.row.pageviews }}
+          <a href="javascript:void(0);" @click="crackCourse(scope.row.id)">{{ $t('views.user.opt.crackCourse') }}</a>
+          <el-divider direction="vertical" />
+          <a href="javascript:void(0);" @click="updateUser(scope.row)">{{ $t('views.user.opt.update') }}</a>
+          <el-divider direction="vertical" />
+          <a href="javascript:void(0);" @click="enable(scope.row)">{{ $t('views.user.opt.enable') }}</a>
+          <el-divider direction="vertical" />
+          <a href="javascript:void(0);" @click="disable(scope.row)">{{ $t('views.user.opt.disable') }}</a>
         </template>
       </el-table-column>
     </el-table>
@@ -99,12 +106,51 @@
       hide-on-single-page
       layout="total, prev, pager, next, sizes, jumper"
       :total="total"
+      :current-page.sync="queryData.pageNum"
+      :page-size.sync="queryData.pageSize"
+      @size-change="sizeChange"
+      @current-change="currentChange"
     />
+
+    <template v-if="userDialogVisible">
+      <el-dialog :title="getOptTitle()" :visible.sync="userDialogVisible">
+        <el-form :model="userData">
+          <el-form-item :label="$t('views.user.data.name')" label-width="80px">
+            <el-input v-model="userData.name" autocomplete="off" />
+          </el-form-item>
+          <el-form-item :label="$t('views.user.data.phone')" label-width="80px">
+            <el-input v-model="userData.phone" autocomplete="off" />
+          </el-form-item>
+          <el-form-item :label="$t('views.user.data.account')" label-width="80px">
+            <el-input v-model="userData.account" autocomplete="off" />
+          </el-form-item>
+          <el-form-item :label="$t('views.user.data.password')" label-width="80px">
+            <el-input v-model="userData.password" autocomplete="off" />
+          </el-form-item>
+          <el-form-item :label="$t('views.user.data.sites')" label-width="80px">
+            <el-select v-model="userData.sites" multiple :placeholder="$t('views.user.data.sites')">
+              <el-option
+                v-for="item in siteList"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-row>
+            <el-button @click="dialogCancel">{{ $t('views.user.opt.cancel') }}</el-button>
+            <el-button type="primary" @click="dialogConfirm">{{ $t('views.user.opt.confirm') }}</el-button>
+          </el-row>
+        </div>
+      </el-dialog>
+    </template>
   </div>
 </template>
 
 <script>
-import { getList } from '@/api/user'
+import { getList, create, update, enable, disable } from '@/api/user'
 import { parseTime } from '@/utils/index'
 
 export default {
@@ -126,22 +172,46 @@ export default {
       list: null,
       total: 0,
       listLoading: true,
+      userDialogVisible: false,
       queryData: {
         name: null,
         account: null,
-        status: null
-      }
+        status: null,
+        pageNum: 1,
+        pageSize: 10
+      },
+      userOptType: null, // user操作类型： 1 创建 2 修改 3 查看
+      userData: {
+        name: null,
+        phone: null,
+        account: null,
+        password: null,
+        sites: null,
+        status: 1
+      },
+      userDataCopy: {},
+      siteList: [
+        {
+          id: 1,
+          name: '秀秀网'
+        },
+        {
+          id: 2,
+          name: '麻瓜网'
+        }
+      ]
     }
   },
   created() {
+    Object.assign(this.userDataCopy, this.userData)
     this.fetchData()
   },
   methods: {
     fetchData(param) {
       this.listLoading = true
       getList(param).then(response => {
-        this.list = response.data
-        this.total = this.list.length
+        this.list = response.data.list
+        this.total = response.data.total
         this.listLoading = false
       })
     },
@@ -153,14 +223,61 @@ export default {
     },
     getStatusInfo(status) {
       if (status === 1) {
-        return this.$t('views.user.query.selectStatus.enable')
+        return this.$t('views.user.query.selectStatus.enabled')
       } else if (status === 0) {
-        return this.$t('views.user.query.selectStatus.disable')
+        return this.$t('views.user.query.selectStatus.disabled')
       } else if (status === 2) {
-        return this.$t('views.user.query.selectStatus.delete')
+        return this.$t('views.user.query.selectStatus.deleted')
       } else {
         return this.$t('views.user.query.selectStatus.all')
       }
+    },
+    sizeChange(size) {
+      this.queryData.pageNum = 1
+      this.query()
+    },
+    currentChange(pageNum) {
+      this.query()
+    },
+    getOptTitle() {
+      return this.$t('views.user.opt.' + this.userOptType)
+    },
+    createUser() {
+      this.userOptType = 'createUser'
+      this.userDialogVisible = true
+    },
+    updateUser(item) {
+      this.userOptType = 'updateUser'
+      this.userDialogVisible = true
+      Object.assign(this.userData, item)
+    },
+    dialogConfirm() {
+      if (this.userOptType === 'createUser') {
+        create(this.userData)
+      }
+      if (this.userOptType === 'updateUser') {
+        update(this.userData)
+      }
+      this.userDialogVisible = false
+      this.query()
+    },
+    dialogCancel() {
+      this.userDialogVisible = false
+      debugger
+      Object.assign(this.userData, this.userDataCopy)
+    },
+    enable(item) {
+      enable(item.id).then(response => {
+        item.status = 1
+      })
+    },
+    disable(item) {
+      disable(item.id).then(response => {
+        item.status = 0
+      })
+    },
+    crackCourse(id) { // 刷课流程，未实现
+      alert('crack course success')
     }
   }
 }
@@ -188,5 +305,10 @@ export default {
   }
   .el-row {
     margin-bottom: 24px;
+  }
+  .el-dialog {
+    .el-form {
+      padding: 30px 50px 30px 0;
+    }
   }
 </style>

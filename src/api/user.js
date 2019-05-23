@@ -32,3 +32,39 @@ export function getList(data) {
     data: data || {}
   })
 }
+
+export function create(data) {
+  return request({
+    url: '/user/create',
+    method: 'post',
+    data: data || {}
+  })
+}
+
+export function update(data) {
+  return request({
+    url: '/user/update',
+    method: 'post',
+    data: data || {}
+  })
+}
+
+export function enable(id) {
+  return request({
+    url: '/user/enable',
+    method: 'get',
+    params: {
+      id
+    }
+  })
+}
+
+export function disable(id) {
+  return request({
+    url: '/user/disable',
+    method: 'get',
+    params: {
+      id
+    }
+  })
+}
